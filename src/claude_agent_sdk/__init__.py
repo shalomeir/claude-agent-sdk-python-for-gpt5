@@ -11,7 +11,6 @@ from ._errors import (
     CLINotFoundError,
     ProcessError,
 )
-from ._internal.transport import Transport
 from ._version import __version__
 from .client import ClaudeSDKClient
 from .query import query
