@@ -301,47 +301,47 @@ Message = UserMessage | AssistantMessage | SystemMessage | ResultMessage | Strea
 
 @dataclass
 class ClaudeAgentOptions:
-    """Query options for Claude SDK."""
+    """Configuration options for interacting with the OpenAI GPT models."""
 
-    allowed_tools: list[str] = field(default_factory=list)
+    # OpenAI configuration
+    model: str | None = None
+    openai_api_key: str | None = None
+    openai_organization: str | None = None
+    openai_project: str | None = None
+    temperature: float | None = None
+    max_output_tokens: int | None = None
+    response_format: str | dict[str, Any] | None = None
+    openai_client: Any | None = None  # Dependency injection hook for testing
+
+    # Prompt configuration
     system_prompt: str | SystemPromptPreset | None = None
+    extra_headers: dict[str, str] = field(default_factory=dict)
+
+    # Legacy Claude specific options retained for compatibility.
+    # They are ignored when using the OpenAI backend but kept so existing
+    # integrations don't break when upgrading the SDK.
+    allowed_tools: list[str] = field(default_factory=list)
     mcp_servers: dict[str, McpServerConfig] | str | Path = field(default_factory=dict)
     permission_mode: PermissionMode | None = None
     continue_conversation: bool = False
     resume: str | None = None
     max_turns: int | None = None
     disallowed_tools: list[str] = field(default_factory=list)
-    model: str | None = None
     permission_prompt_tool_name: str | None = None
     cwd: str | Path | None = None
     settings: str | None = None
     add_dirs: list[str | Path] = field(default_factory=list)
     env: dict[str, str] = field(default_factory=dict)
-    extra_args: dict[str, str | None] = field(
-        default_factory=dict
-    )  # Pass arbitrary CLI flags
-    max_buffer_size: int | None = None  # Max bytes when buffering CLI stdout
-    debug_stderr: Any = (
-        sys.stderr
-    )  # Deprecated: File-like object for debug output. Use stderr callback instead.
-    stderr: Callable[[str], None] | None = None  # Callback for stderr output from CLI
-
-    # Tool permission callback
+    extra_args: dict[str, str | None] = field(default_factory=dict)
+    max_buffer_size: int | None = None
+    debug_stderr: Any = sys.stderr
+    stderr: Callable[[str], None] | None = None
     can_use_tool: CanUseTool | None = None
-
-    # Hook configurations
     hooks: dict[HookEvent, list[HookMatcher]] | None = None
-
     user: str | None = None
-
-    # Partial message streaming support
     include_partial_messages: bool = False
-    # When true resumed sessions will fork to a new session ID rather than
-    # continuing the previous session.
     fork_session: bool = False
-    # Agent definitions for custom agents
     agents: dict[str, AgentDefinition] | None = None
-    # Setting sources to load (user, project, local)
     setting_sources: list[SettingSource] | None = None
 
 
